@@ -1,42 +1,113 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem 2rem;
+  min-height: 100vh;
+}
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.app-header {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.app-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.zone {
+  min-height: 120px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+@media (prefers-color-scheme: light) {
+  .zone {
+    border-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.02);
   }
-  to {
-    transform: rotate(360deg);
+}
+
+.zone-placeholder {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+}
+
+@media (prefers-color-scheme: light) {
+  .zone-placeholder {
+    color: rgba(0, 0, 0, 0.45);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+.zone-upload {
+  position: relative;
+  min-height: 140px;
+  cursor: pointer;
+}
+
+.zone-upload.is-dragover {
+  border-color: rgba(100, 150, 255, 0.6);
+  background-color: rgba(100, 150, 255, 0.08);
+}
+
+@media (prefers-color-scheme: light) {
+  .zone-upload.is-dragover {
+    border-color: rgba(50, 100, 200, 0.5);
+    background-color: rgba(50, 100, 200, 0.06);
   }
 }
 
-.card {
-  padding: 2em;
+.upload-input-hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  pointer-events: none;
 }
 
-.read-the-docs {
-  color: #888;
+.zone-error {
+  margin: 0;
+  color: #e57373;
+  font-size: 0.95rem;
+  text-align: center;
+  max-width: 90%;
+}
+
+@media (prefers-color-scheme: light) {
+  .zone-error {
+    color: #c62828;
+  }
+}
+
+.zone-download {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.btn-download {
+  min-width: 140px;
+}
+
+.btn-download:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
