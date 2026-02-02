@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { UploadZone } from './UploadZone';
 import { validateImage } from '../utils/validateImage';
+import { downloadAsPng } from '../utils/downloadAsPng';
 
 export function AppLayout() {
   const [file, setFile] = useState<File | null>(null);
@@ -52,11 +53,20 @@ export function AppLayout() {
         </section>
 
         <section className="zone zone-after" aria-label="Result after">
-          <p className="zone-placeholder">After</p>
+          <p className="zone-placeholder">Result will appear here</p>
         </section>
 
         <div className="zone-download">
-          <button type="button" disabled={!file} className="btn-download">
+          <button
+            type="button"
+            disabled={!file}
+            className="btn-download"
+            onClick={() => {
+              if (previewUrl && file) {
+                downloadAsPng(previewUrl, file.name);
+              }
+            }}
+          >
             Download
           </button>
         </div>
