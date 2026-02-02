@@ -79,7 +79,7 @@
 
 ## Milestone 2 — ML Inference
 
-### T-005 Подключение onnxruntime-web
+### T-005 (done) Подключение onnxruntime-web
 
 **Цель:** В проект добавлен и используется `onnxruntime-web` для создания сессии инференса.
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { UploadZone } from './UploadZone';
 import { validateImage } from '../utils/validateImage';
 import { downloadAsPng } from '../utils/downloadAsPng';
+import '../onnx/session'; // T-005: initialize ORT environment
 
 export function AppLayout() {
   const [file, setFile] = useState<File | null>(null);

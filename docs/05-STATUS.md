@@ -1,10 +1,10 @@
 # Project Status
 
 ## Текущий этап
-Milestone 1: T-001, T-002, T-003, T-004 done
+Milestone 1: done. Milestone 2: T-005 done
 
 ## Следующая задача
-T-005 Подключение onnxruntime-web
+T-006 Загрузка модели u2netp.onnx
 
 ## Что готово
 - GitHub repo
@@ -16,10 +16,11 @@ T-005 Подключение onnxruntime-web
 - T-002 UI загрузки (click + drag-and-drop), валидации по размеру и разрешению
 - T-003 Превью исходного изображения («Before»)
 - T-004 Заглушка результата и кнопка «Download» (stub)
+- T-005 Подключение onnxruntime-web (InferenceSession API, инициализация ORT)
 
 ## Блокеры
 Нет
 
 ## Следующий шаг
-Выполнить T-005
+Выполнить T-006 (разместить u2netp.onnx в public/models/, загружать модель)
 
