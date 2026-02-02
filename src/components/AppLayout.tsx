@@ -2,12 +2,26 @@ import { useEffect, useState } from 'react';
 import { UploadZone } from './UploadZone';
 import { validateImage } from '../utils/validateImage';
 import { downloadAsPng } from '../utils/downloadAsPng';
-import '../onnx/session'; // T-005: initialize ORT environment
+import {
+  createModelSession,
+  MODEL_PATH,
+  type InferenceSession,
+} from '../onnx/session';
 
 export function AppLayout() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [modelSession, setModelSession] = useState<InferenceSession | null>(null);
+
+  useEffect(() => {
+    createModelSession(MODEL_PATH)
+      .then(setModelSession)
+      .catch(() => {
+        // Model load failed (e.g. file missing); session stays null.
+        // T-006: first load must complete without error when model is present.
+      });
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -37,7 +51,7 @@ export function AppLayout() {
   };
 
   return (
-    <div className="app-layout">
+    <div className="app-layout" data-model-ready={modelSession !== null}>
       <header className="app-header">
         <h1>Background Remover</h1>
       </header>
