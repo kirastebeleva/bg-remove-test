@@ -1,10 +1,10 @@
 # Project Status
 
 ## Текущий этап
-Milestone 1: done. Milestone 2: T-007 done
+Milestone 1: done. Milestone 2: T-008 done
 
 ## Следующая задача
-T-008 Препроцессинг: изображение → тензор
+T-009 Inference → маска
 
 ## Что готово
 - GitHub repo
@@ -19,10 +19,11 @@ T-008 Препроцессинг: изображение → тензор
 - T-005 Подключение onnxruntime-web (InferenceSession API, инициализация ORT)
 - T-006 Загрузка модели u2netp.onnx
 - T-007 WebGPU и WASM fallback
+- T-008 Препроцессинг: изображение → тензор
 
 ## Блокеры
 Нет
 
 ## Следующий шаг
-Выполнить T-008 (препроцессинг: изображение → тензор)
+Выполнить T-009 (inference → маска)
 
