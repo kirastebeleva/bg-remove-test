@@ -112,7 +112,7 @@
 
 ---
 
-### T-007 WebGPU и WASM fallback
+### T-007 (done) WebGPU и WASM fallback
 
 **Цель:** Инференс выполняется на WebGPU; при недоступности — на WASM.
 

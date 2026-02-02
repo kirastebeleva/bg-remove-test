@@ -1,10 +1,10 @@
 # Project Status
 
 ## Текущий этап
-Milestone 1: done. Milestone 2: T-006 done
+Milestone 1: done. Milestone 2: T-007 done
 
 ## Следующая задача
-T-007 WebGPU и WASM fallback
+T-008 Препроцессинг: изображение → тензор
 
 ## Что готово
 - GitHub repo
@@ -18,10 +18,11 @@ T-007 WebGPU и WASM fallback
 - T-004 Заглушка результата и кнопка «Download» (stub)
 - T-005 Подключение onnxruntime-web (InferenceSession API, инициализация ORT)
 - T-006 Загрузка модели u2netp.onnx
+- T-007 WebGPU и WASM fallback
 
 ## Блокеры
 Нет
 
 ## Следующий шаг
-Выполнить T-007 (WebGPU + WASM fallback)
+Выполнить T-008 (препроцессинг: изображение → тензор)
 
