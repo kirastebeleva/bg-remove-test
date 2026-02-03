@@ -7,12 +7,17 @@ import {
   MODEL_PATH,
   type InferenceSession,
 } from '../onnx/session';
+import { imageToTensor } from '../onnx/preprocess';
+import { runInference } from '../onnx/inference';
 
 export function AppLayout() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [modelSession, setModelSession] = useState<InferenceSession | null>(null);
+  const [inferenceTimeMs, setInferenceTimeMs] = useState<number | null>(null);
+  const [inferenceError, setInferenceError] = useState<string | null>(null);
+  const [isInferring, setIsInferring] = useState(false);
 
   useEffect(() => {
     createModelSession(MODEL_PATH)
@@ -29,8 +34,47 @@ export function AppLayout() {
     };
   }, [previewUrl]);
 
+  useEffect(() => {
+    if (!file || !previewUrl || !modelSession) return;
+    setInferenceError(null);
+    setInferenceTimeMs(null);
+    setIsInferring(true);
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = async () => {
+      try {
+        const tensor = imageToTensor(img);
+        const { mask, inferenceTimeMs: ms } = await runInference(modelSession, tensor);
+        setInferenceTimeMs(ms);
+        setIsInferring(false);
+        console.log('T-009 inference:', { maskDims: mask.dims, maskLength: mask.data.length, inferenceTimeMs: ms });
+        (window as Window & { __lastResult?: { maskDims: number[]; maskLength: number; inferenceTimeMs: number } }).__lastResult = {
+          maskDims: mask.dims,
+          maskLength: mask.data.length,
+          inferenceTimeMs: ms,
+        };
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e);
+        setInferenceError(message);
+        setInferenceTimeMs(null);
+        setIsInferring(false);
+        console.error('T-009 inference error:', e);
+      }
+    };
+    img.onerror = () => {
+      setInferenceError('Failed to load image');
+      setIsInferring(false);
+    };
+    img.src = previewUrl;
+    return () => {
+      img.src = '';
+    };
+  }, [file, previewUrl, modelSession]);
+
   const handleFileSelect = (selectedFile: File) => {
     setError(null);
+    setInferenceTimeMs(null);
+    setInferenceError(null);
     validateImage(selectedFile).then((result) => {
       if (result.ok) {
         setPreviewUrl((prev) => {
@@ -61,14 +105,22 @@ export function AppLayout() {
 
         <section className="zone zone-before" aria-label="Preview before">
           {previewUrl ? (
-            <img src={previewUrl} alt="Original" className="preview-image" />
+            <img
+              src={previewUrl}
+              alt="Original"
+              className="preview-image"
+            />
           ) : (
             <p className="zone-placeholder">Before</p>
           )}
         </section>
 
         <section className="zone zone-after" aria-label="Result after">
-          <p className="zone-placeholder">Result will appear here</p>
+          {isInferring ? (
+            <p className="zone-placeholder">Processing…</p>
+          ) : (
+            <p className="zone-placeholder">Result will appear here</p>
+          )}
         </section>
 
         <div className="zone-download">
@@ -84,6 +136,17 @@ export function AppLayout() {
           >
             Download
           </button>
+          {inferenceError != null && (
+            <p className="inference-error" role="alert">
+              {inferenceError}
+            </p>
+          )}
+          {inferenceTimeMs != null && (
+            <p className="inference-time" aria-live="polite">
+              Inference: {inferenceTimeMs.toFixed(0)} ms
+              {inferenceTimeMs <= 2000 ? ' (≤ 2 s ✓)' : ' (> 2 s)'}
+            </p>
+          )}
         </div>
       </main>
     </div>
