@@ -136,7 +136,6 @@ export function AppLayout() {
           >
             Download
           </button>
-          <p className="zone-placeholder" style={{ marginTop: '0.5rem' }}>Это тест</p>
           {inferenceError != null && (
             <p className="inference-error" role="alert">
               {inferenceError}

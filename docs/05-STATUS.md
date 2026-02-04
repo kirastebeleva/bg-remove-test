@@ -1,10 +1,10 @@
 # Project Status
 
 ## Текущий этап
-Milestone 1: done. Milestone 2: T-008 done
+Milestone 1: done. Milestone 2: T-009 done
 
 ## Следующая задача
-T-009 Inference → маска
+T-010 Апскейл маски и композиция в PNG
 
 ## Что готово
 - GitHub repo
@@ -20,10 +20,11 @@ T-009 Inference → маска
 - T-006 Загрузка модели u2netp.onnx
 - T-007 WebGPU и WASM fallback
 - T-008 Препроцессинг: изображение → тензор
+- T-009 Inference → маска
 
 ## Блокеры
 Нет
 
 ## Следующий шаг
-Выполнить T-009 (inference → маска)
+Выполнить T-010 (апскейл маски и композиция в PNG)
 
