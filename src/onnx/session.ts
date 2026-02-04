@@ -17,13 +17,13 @@ export type { InferenceSession };
 
 /**
  * Creates an InferenceSession for the given model path.
- * Uses WASM first: u2netp uses MaxPool with ceil(), which WebGPU does not support yet
- * ("ceil() in shape computation is not yet supported for MaxPool"). WASM has full support.
- * Fallback to WebGPU only when WASM is unavailable (T-007).
+ * WASM only: u2netp uses MaxPool with ceil(), which WebGPU does not support
+ * ("ceil() in shape computation is not yet supported for MaxPool"). Using only WASM
+ * avoids the error; WebGPU is not used for this model (T-007 fallback still applies if WASM fails).
  * Browser cache is used automatically (no custom caching).
  */
 export async function createModelSession(modelPath: string): Promise<InferenceSession> {
   return InferenceSession.create(modelPath, {
-    executionProviders: ['wasm', 'webgpu'],
+    executionProviders: ['wasm'],
   });
 }

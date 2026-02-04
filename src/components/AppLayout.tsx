@@ -109,17 +109,11 @@ export function AppLayout() {
     setInferenceError(null);
     validateImage(selectedFile).then((result) => {
       if (result.ok) {
-        setPreviewUrl((prev) => {
-          if (prev) URL.revokeObjectURL(prev);
-          return URL.createObjectURL(result.file);
-        });
+        setPreviewUrl(() => URL.createObjectURL(result.file));
         setFile(result.file);
         setError(null);
       } else {
-        setPreviewUrl((prev) => {
-          if (prev) URL.revokeObjectURL(prev);
-          return null;
-        });
+        setPreviewUrl(null);
         setFile(null);
         setError(result.error);
       }
