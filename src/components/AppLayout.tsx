@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { UploadZone } from './UploadZone';
 import { validateImage } from '../utils/validateImage';
 import { downloadPngBlob } from '../utils/downloadAsPng';
@@ -27,6 +27,9 @@ export function AppLayout() {
   const [modelLoading, setModelLoading] = useState(true);
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
 
+  const previewUrlRef = useRef<string | null>(null);
+  const resultPngUrlRef = useRef<string | null>(null);
+
   const loadModel = useCallback(() => {
     setModelLoadError(null);
     setModelLoading(true);
@@ -43,9 +46,10 @@ export function AppLayout() {
   }, []);
 
   useEffect(() => {
-    return () => {
-      if (resultPngUrl) URL.revokeObjectURL(resultPngUrl);
-    };
+    previewUrlRef.current = previewUrl;
+  }, [previewUrl]);
+  useEffect(() => {
+    resultPngUrlRef.current = resultPngUrl;
   }, [resultPngUrl]);
 
   useEffect(() => {
@@ -54,9 +58,10 @@ export function AppLayout() {
 
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      if (resultPngUrlRef.current) URL.revokeObjectURL(resultPngUrlRef.current);
     };
-  }, [previewUrl]);
+  }, []);
 
   useEffect(() => {
     if (!file || !previewUrl || !modelSession) return;
@@ -112,7 +117,10 @@ export function AppLayout() {
     setInferenceError(null);
     validateImage(selectedFile).then((result) => {
       if (result.ok) {
-        setPreviewUrl(() => URL.createObjectURL(result.file));
+        setPreviewUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return URL.createObjectURL(result.file);
+        });
         setFile(result.file);
         setError(null);
       } else {
