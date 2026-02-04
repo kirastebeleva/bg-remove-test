@@ -1,4 +1,16 @@
 /**
+ * Triggers download of a PNG Blob (задел под пакетное/многформатное скачивание).
+ */
+export function downloadPngBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename.endsWith('.png') ? filename : `${filename.replace(/\.[^.]+$/, '')}.png`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
  * Loads image from URL, draws to canvas, exports as PNG and triggers download.
  */
 export function downloadAsPng(imageUrl: string, filename: string): Promise<void> {

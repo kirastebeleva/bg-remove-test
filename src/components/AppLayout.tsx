@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { UploadZone } from './UploadZone';
 import { validateImage } from '../utils/validateImage';
-import { downloadAsPng } from '../utils/downloadAsPng';
+import { downloadPngBlob } from '../utils/downloadAsPng';
+import { composePngFromMask } from '../utils/composePng';
 import {
   createModelSession,
   MODEL_PATH,
@@ -18,6 +19,14 @@ export function AppLayout() {
   const [inferenceTimeMs, setInferenceTimeMs] = useState<number | null>(null);
   const [inferenceError, setInferenceError] = useState<string | null>(null);
   const [isInferring, setIsInferring] = useState(false);
+  const [resultPngUrl, setResultPngUrl] = useState<string | null>(null);
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resultPngUrl) URL.revokeObjectURL(resultPngUrl);
+    };
+  }, [resultPngUrl]);
 
   useEffect(() => {
     createModelSession(MODEL_PATH)
@@ -38,6 +47,11 @@ export function AppLayout() {
     if (!file || !previewUrl || !modelSession) return;
     setInferenceError(null);
     setInferenceTimeMs(null);
+    setResultBlob(null);
+    setResultPngUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
     setIsInferring(true);
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -46,19 +60,25 @@ export function AppLayout() {
         const tensor = imageToTensor(img);
         const { mask, inferenceTimeMs: ms } = await runInference(modelSession, tensor);
         setInferenceTimeMs(ms);
-        setIsInferring(false);
         console.log('T-009 inference:', { maskDims: mask.dims, maskLength: mask.data.length, inferenceTimeMs: ms });
         (window as Window & { __lastResult?: { maskDims: number[]; maskLength: number; inferenceTimeMs: number } }).__lastResult = {
           maskDims: mask.dims,
           maskLength: mask.data.length,
           inferenceTimeMs: ms,
         };
+        const blob = await composePngFromMask(img, mask);
+        setResultBlob(blob);
+        setResultPngUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return URL.createObjectURL(blob);
+        });
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
         setInferenceError(message);
         setInferenceTimeMs(null);
-        setIsInferring(false);
         console.error('T-009 inference error:', e);
+      } finally {
+        setIsInferring(false);
       }
     };
     img.onerror = () => {
@@ -118,6 +138,8 @@ export function AppLayout() {
         <section className="zone zone-after" aria-label="Result after">
           {isInferring ? (
             <p className="zone-placeholder">Processing…</p>
+          ) : resultPngUrl ? (
+            <img src={resultPngUrl} alt="Result" className="preview-image" />
           ) : (
             <p className="zone-placeholder">Result will appear here</p>
           )}
@@ -126,11 +148,11 @@ export function AppLayout() {
         <div className="zone-download">
           <button
             type="button"
-            disabled={!file}
+            disabled={!file || !resultBlob}
             className="btn-download"
             onClick={() => {
-              if (previewUrl && file) {
-                downloadAsPng(previewUrl, file.name);
+              if (resultBlob && file) {
+                downloadPngBlob(resultBlob, file.name);
               }
             }}
           >
