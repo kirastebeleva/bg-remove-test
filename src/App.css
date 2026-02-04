@@ -66,6 +66,39 @@
   }
 }
 
+.zone-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.zone-hint code {
+  font-size: 0.85em;
+}
+
+.zone-model-message p {
+  margin: 0 0 0.5rem;
+}
+
+.zone-model-message p:last-of-type {
+  margin-bottom: 0.75rem;
+}
+
+.btn-load-model {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: rgba(100, 150, 255, 0.25);
+  color: inherit;
+  border: 1px solid rgba(100, 150, 255, 0.5);
+  border-radius: 6px;
+}
+
+.btn-load-model:hover {
+  background: rgba(100, 150, 255, 0.35);
+}
+
 .zone-upload {
   position: relative;
   min-height: 140px;

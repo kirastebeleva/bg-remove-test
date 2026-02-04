@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { UploadZone } from './UploadZone';
 import { validateImage } from '../utils/validateImage';
 import { downloadPngBlob } from '../utils/downloadAsPng';
@@ -21,6 +21,23 @@ export function AppLayout() {
   const [isInferring, setIsInferring] = useState(false);
   const [resultPngUrl, setResultPngUrl] = useState<string | null>(null);
   const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+  const [modelLoading, setModelLoading] = useState(true);
+  const [modelLoadError, setModelLoadError] = useState<string | null>(null);
+
+  const loadModel = useCallback(() => {
+    setModelLoadError(null);
+    setModelLoading(true);
+    createModelSession(MODEL_PATH)
+      .then((session) => {
+        setModelSession(session);
+        setModelLoadError(null);
+      })
+      .catch((e) => {
+        const msg = e instanceof Error ? e.message : String(e);
+        setModelLoadError(msg || 'Model load failed');
+      })
+      .finally(() => setModelLoading(false));
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -29,13 +46,8 @@ export function AppLayout() {
   }, [resultPngUrl]);
 
   useEffect(() => {
-    createModelSession(MODEL_PATH)
-      .then(setModelSession)
-      .catch(() => {
-        // Model load failed (e.g. file missing); session stays null.
-        // T-006: first load must complete without error when model is present.
-      });
-  }, []);
+    loadModel();
+  }, [loadModel]);
 
   useEffect(() => {
     return () => {
@@ -140,6 +152,20 @@ export function AppLayout() {
             <p className="zone-placeholder">Processing…</p>
           ) : resultPngUrl ? (
             <img src={resultPngUrl} alt="Result" className="preview-image" />
+          ) : file && !modelSession ? (
+            <div className="zone-placeholder zone-model-message">
+              {modelLoading ? (
+                <p>Loading model…</p>
+              ) : (
+                <>
+                  <p>{modelLoadError ? `Model failed: ${modelLoadError}` : 'Model not loaded'}</p>
+                  <p className="zone-hint">Run <code>npm run download-model</code>, then click below.</p>
+                  <button type="button" className="btn-load-model" onClick={loadModel}>
+                    Load model
+                  </button>
+                </>
+              )}
+            </div>
           ) : (
             <p className="zone-placeholder">Result will appear here</p>
           )}
