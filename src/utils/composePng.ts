@@ -25,6 +25,7 @@
  */
 
 import type { MaskTensor } from '../onnx/inference';
+import { featherAlpha } from './featherMask';
 
 /** Из dims модели [1, 1, H, W] или [1, H, W] возвращает высоту и ширину маски. */
 export function getMaskSize(mask: MaskTensor): { width: number; height: number } {
@@ -89,7 +90,11 @@ export function composePngFromMask(image: HTMLImageElement, mask: MaskTensor): P
   const w = image.naturalWidth;
   const h = image.naturalHeight;
 
-  const alpha = upscaleMaskToSize(mask, maskWidth, maskHeight, w, h);
+  let alpha = upscaleMaskToSize(mask, maskWidth, maskHeight, w, h);
+  const g = globalThis as unknown as { __featherRadius?: number };
+  const featherRadius =
+    typeof g !== 'undefined' && Number.isFinite(g.__featherRadius) ? g.__featherRadius : undefined;
+  alpha = featherAlpha(alpha, w, h, featherRadius);
 
   const canvas = document.createElement('canvas');
   canvas.width = w;
