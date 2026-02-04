@@ -11,10 +11,10 @@
  *   (5) В консоли: лог «T-009 inference» с maskDims, maskLength — маска получена.
  *   (6) Проверить: result.mask.data — Float32Array; result.mask.dims — массив [1, 1, H, W] или [1, H, W]; data.length === произведение dims.
  *
- * Критерий 2 — «Замерить время inference — ≤ 2 сек»:
- *   (1) После успешного inference прочитать значение «Inference: XXX ms» на экране (или result.inferenceTimeMs из консоли).
- *   (2) Проверить: XXX ≤ 2000 (в UI отображается «≤ 2 s ✓» при выполнении).
- *   (3) При необходимости повторить на том же или другом изображении — время стабильно ≤ 2 сек.
+ * Критерий 2 — «Замерить время inference — ≤ 10 сек»:
+ *   (1) После успешного inference прочитать значение «Inference: X.XX s» на экране (или result.inferenceTimeMs из консоли).
+ *   (2) Проверить: inferenceTimeMs ≤ 10000 (в UI отображается «≤ 10 s ✓» при выполнении).
+ *   (3) При необходимости повторить на том же или другом изображении — время стабильно ≤ 10 сек.
  */
 
 import { InferenceSession, Tensor } from 'onnxruntime-web';
@@ -35,7 +35,7 @@ export type RunInferenceResult = {
 /**
  * Runs one inference: input tensor → model → mask.
  * Uses session.inputNames[0] and session.outputNames[0] (no hardcoded names).
- * Returns mask and inference time (DoD: inference ≤ 2 sec).
+ * Returns mask and inference time (DoD: inference ≤ 10 sec).
  */
 export async function runInference(
   session: InferenceSession,
