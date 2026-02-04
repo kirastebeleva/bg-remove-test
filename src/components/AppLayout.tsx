@@ -29,6 +29,7 @@ export function AppLayout() {
 
   const previewUrlRef = useRef<string | null>(null);
   const resultPngUrlRef = useRef<string | null>(null);
+  const revokeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadModel = useCallback(() => {
     setModelLoadError(null);
@@ -57,9 +58,16 @@ export function AppLayout() {
   }, [loadModel]);
 
   useEffect(() => {
+    if (revokeTimeoutRef.current) {
+      clearTimeout(revokeTimeoutRef.current);
+      revokeTimeoutRef.current = null;
+    }
     return () => {
-      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
-      if (resultPngUrlRef.current) URL.revokeObjectURL(resultPngUrlRef.current);
+      revokeTimeoutRef.current = setTimeout(() => {
+        if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+        if (resultPngUrlRef.current) URL.revokeObjectURL(resultPngUrlRef.current);
+        revokeTimeoutRef.current = null;
+      }, 0);
     };
   }, []);
 
